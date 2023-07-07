@@ -36,7 +36,9 @@ class GeventWorker(AsyncWorker):
     wsgi_handler = None
 
     def patch(self):
-        monkey.patch_all()
+        # Fix 'Monkey-patching ssl after ssl has already been imported may lead to errors'
+        self.log.warning('gevent.monkey.patch_all(ssl=False) by joinquant')
+        monkey.patch_all(ssl=False)
 
         # patch sockets
         sockets = []
