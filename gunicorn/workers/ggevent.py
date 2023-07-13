@@ -59,10 +59,18 @@ class GeventWorker(AsyncWorker):
         monkey.noisy = False
 
         # if the new version is used make sure to patch subprocess
-        if gevent.version_info[0] == 0:
-            monkey.patch_all()
+        if sys.version_info[0] < 3:
+            if gevent.version_info[0] == 0:
+                monkey.patch_all()
+            else:
+                monkey.patch_all(subprocess=True)
         else:
-            monkey.patch_all(subprocess=True)
+            # Fix 'Monkey-patching ssl after ssl has already been imported may lead to errors'
+            self.log.warning('gevent.monkey.patch_all(ssl=False) by joinquant')
+            if gevent.version_info[0] == 0:
+                monkey.patch_all()
+            else:
+                monkey.patch_all(subprocess=True)
 
         # monkey patch sendfile to make it none blocking
         patch_sendfile()
