@@ -68,9 +68,9 @@ class GeventWorker(AsyncWorker):
             # Fix 'Monkey-patching ssl after ssl has already been imported may lead to errors'
             self.log.warning('gevent.monkey.patch_all(ssl=False) by joinquant')
             if gevent.version_info[0] == 0:
-                monkey.patch_all()
+                monkey.patch_all(ssl=False)
             else:
-                monkey.patch_all(subprocess=True)
+                monkey.patch_all(subprocess=True, ssl=False)
 
         # monkey patch sendfile to make it none blocking
         patch_sendfile()
